@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
-
-import 'package:symple_mobile/upload.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:symple_mobile/qr_scanner_overlay.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -11,6 +10,8 @@ class ConnectScreen extends StatefulWidget {
 }
 
 class _ConnectScreenState extends State<ConnectScreen> {
+  bool isScanComplete = false;
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -20,62 +21,48 @@ class _ConnectScreenState extends State<ConnectScreen> {
       body: Center(
         child: Column(
           children: [
-            const Spacer(),
+            SizedBox(
+              height: MediaQuery.sizeOf(context).height / 25,
+            ),
             const Text(
               'Connect to your PC',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 28,
+                letterSpacing: 1,
               ),
             ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 128),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                height: MediaQuery.sizeOf(context).height / 2,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: const Color.fromARGB(255, 195, 195, 195),
-                ),
-                child: ListView.builder(
-                  itemCount: 2, // TO DO : get count from found pc's array in provider
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                        ),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 7.5,
-                            ),
-                            const Text('PC'), // TO DO : get pc details from array and place them here
-                            const Spacer(),
-                            Transform.rotate(
-                              angle: 90 * math.pi / 180,
-                              child: IconButton(
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const UploadScreen(),
-                                      ));
-                                  // TO DO : connect to said PC
-                                },
-                                icon: const Icon(Icons.link),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+            Expanded(
+              flex: 4,
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: MobileScanner(
+                      onDetect: (barcodes) {
+                        if (!isScanComplete) {
+                          String scannedBarcode = barcodes.barcodes.last.rawValue ?? '---';
+                          isScanComplete = true;
+                          print('got a code! : $scannedBarcode');
+                          // TO DO : handle qr code
+                          // TO DO : splash screen while getting ip and establishing connection with pc
+                        }
+                      },
+                    ),
+                  ),
+                  QRScannerOverlay(overlayColour: Theme.of(context).scaffoldBackgroundColor),
+                  GestureDetector(
+                    onTap: () => isScanComplete = false,
+                  ),
+                ],
+              ),
+            ),
+            const Expanded(
+              flex: 2,
+              child: Text(
+                'align the qr code on your computer screen with the box',
+                textAlign: TextAlign.center,
+                style: TextStyle(letterSpacing: 1),
               ),
             ),
           ],
