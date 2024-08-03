@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   qrscan: ^0.3.3
   mobile_scanner: ^5.1.1
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

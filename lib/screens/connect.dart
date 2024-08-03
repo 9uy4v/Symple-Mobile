@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:symple_mobile/qr_scanner_overlay.dart';
+import 'package:symple_mobile/widgets/qr_scanner_overlay.dart';
+import 'package:symple_mobile/providers/connection_provider.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -42,10 +44,19 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       onDetect: (barcodes) {
                         if (!isScanComplete) {
                           String scannedBarcode = barcodes.barcodes.last.rawValue ?? '---';
-                          isScanComplete = true;
-                          print('got a code! : $scannedBarcode');
-                          // TO DO : handle qr code
+                          scannedBarcode != '---' ? isScanComplete = true : debugPrint('null code received');
                           // TO DO : splash screen while getting ip and establishing connection with pc
+                          // validate barcode
+                          print('got a code! : $scannedBarcode');
+                          Provider.of<ConnectionProvider>(context, listen: false).createConnection(scannedBarcode).then(
+                            (value) {
+                              if (value) {
+                                isScanComplete = true;
+                              } else {
+                                isScanComplete = false;
+                              }
+                            },
+                          );
                         }
                       },
                     ),

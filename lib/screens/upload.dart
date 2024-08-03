@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:symple_mobile/connect.dart';
+import 'package:symple_mobile/screens/connect.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
