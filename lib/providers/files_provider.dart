@@ -18,4 +18,9 @@ class FilesProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void removeFile(int index) {
+    _selectedFiles.removeAt(index);
+    notifyListeners();
+  }
 }
