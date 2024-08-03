@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:symple_mobile/providers/connection_provider.dart';
-import 'package:symple_mobile/screens/connect.dart';
+import 'package:symple_mobile/providers/files_provider.dart';
+import 'package:symple_mobile/providers/socket_provider.dart';
+import 'package:symple_mobile/screens/connection_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: ConnectionProvider()),
+        ChangeNotifierProvider.value(value: SocketProvider()),
+        ChangeNotifierProvider.value(value: FilesProvider()),
       ],
       child: MaterialApp(
         title: 'Symple',

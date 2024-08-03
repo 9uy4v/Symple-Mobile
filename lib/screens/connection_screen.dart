@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:symple_mobile/screens/files_upload_screen.dart';
 import 'package:symple_mobile/widgets/qr_scanner_overlay.dart';
-import 'package:symple_mobile/providers/connection_provider.dart';
+import 'package:symple_mobile/providers/socket_provider.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -48,15 +49,23 @@ class _ConnectScreenState extends State<ConnectScreen> {
                           // TO DO : splash screen while getting ip and establishing connection with pc
                           // validate barcode
                           print('got a code! : $scannedBarcode');
-                          Provider.of<ConnectionProvider>(context, listen: false).createConnection(scannedBarcode).then(
+                          Provider.of<SocketProvider>(context, listen: false).createConnection(scannedBarcode).then(
                             (value) {
+                              //exit splash screen
                               if (value) {
-                                isScanComplete = true;
+                                // move screens
                               } else {
                                 isScanComplete = false;
+                                // error connecting to pc
                               }
                             },
                           );
+                          // TO DO : move page switch to only if connection is active
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const UploadScreen(),
+                              ));
                         }
                       },
                     ),

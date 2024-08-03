@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 
-class ConnectionProvider with ChangeNotifier {
+class SocketProvider with ChangeNotifier {
   late SecureSocket socket;
 
   // creates connection with pc
@@ -19,4 +19,7 @@ class ConnectionProvider with ChangeNotifier {
 
     return true;
   }
+
+  //  convert file to binary data to send to pc
+  // var bytes = await File('filename').readAsBytes();
 }
