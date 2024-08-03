@@ -53,19 +53,19 @@ class _ConnectScreenState extends State<ConnectScreen> {
                             (value) {
                               //exit splash screen
                               if (value) {
-                                // move screens
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const UploadScreen(),
+                                    ));
                               } else {
                                 isScanComplete = false;
+                                print('ERROR ERROR');
                                 // error connecting to pc
                               }
                             },
                           );
                           // TO DO : move page switch to only if connection is active
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const UploadScreen(),
-                              ));
                         }
                       },
                     ),
