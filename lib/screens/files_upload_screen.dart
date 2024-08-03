@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
@@ -47,25 +49,42 @@ class _UploadScreenState extends State<UploadScreen> {
               child: ListView.builder(
                 itemCount: Provider.of<FilesProvider>(context, listen: true).files.length, // TO DO : change according to file count from provider
                 itemBuilder: (context, index) {
+                  final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
                   return Container(
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        if (isSending)
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
-                            child: const CircularProgressIndicator(),
-                          ),
-                        if (!isSending)
-                          const Icon(
-                            Icons.file_copy,
-                            size: 30,
-                          ),
-                        const SizedBox(
-                          width: 15,
+                    padding: const EdgeInsets.all(8),
+                    child: Dismissible(
+                      key: Key(fileName),
+                      background: Container(
+                        color: const Color.fromARGB(255, 225, 100, 100),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
                         ),
-                        Text(Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last),
-                      ],
+                      ),
+                      onDismissed: (direction) {
+                        Provider.of<FilesProvider>(context, listen: false).removeFile(index);
+                      },
+                      child: Row(
+                        children: [
+                          if (isSending)
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
+                              child: const CircularProgressIndicator(),
+                            ),
+                          if (!isSending)
+                            const Icon(
+                              Icons.file_copy,
+                              size: 30,
+                            ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            fileName,
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },

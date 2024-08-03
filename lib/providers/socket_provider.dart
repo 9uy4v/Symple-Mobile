@@ -20,6 +20,7 @@ class SocketProvider with ChangeNotifier {
     return true;
   }
 
+  
   //  convert file to binary data to send to pc
   // var bytes = await File('filename').readAsBytes();
 }
