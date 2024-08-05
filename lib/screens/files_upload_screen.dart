@@ -114,7 +114,9 @@ class _UploadScreenState extends State<UploadScreen> {
                 setState(() {
                   isSending = !isSending;
                 });
-                Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
+                if (isSending) {
+                  Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
+                }
                 // TO DO : send files to pc, clear chosen file array
                 // TO DO : when sending make sure all files are not null in case they were deleted after being selected
               },

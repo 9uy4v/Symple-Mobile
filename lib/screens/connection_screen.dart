@@ -45,13 +45,13 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       onDetect: (barcodes) {
                         if (!isScanComplete) {
                           String scannedBarcode = barcodes.barcodes.last.rawValue ?? '---';
-                          scannedBarcode != '---' ? isScanComplete = true : debugPrint('null code received');
+                          scannedBarcode != '---' ? isScanComplete = true : debugPrint('null code received'); // TO DO : delete when validator added
                           // TO DO : splash screen while getting ip and establishing connection with pc
                           // TO DO : validate barcode
                           print('got a code! : $scannedBarcode');
-                          Provider.of<SocketProvider>(context, listen: false).createConnection(scannedBarcode).then(
+                          Provider.of<SocketProvider>(context, listen: false).handleCode(scannedBarcode).then(
                             (value) {
-                              //exit splash screen
+                              // TO DO : exit splash screen
                               if (value) {
                                 Navigator.pushReplacement(
                                     context,
@@ -60,7 +60,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                                     ));
                               } else {
                                 isScanComplete = false;
-                                print('ERROR ERROR');
+                                print('can\'t connect to PC');
                                 // error connecting to pc
                               }
                             },
