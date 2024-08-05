@@ -47,7 +47,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                           String scannedBarcode = barcodes.barcodes.last.rawValue ?? '---';
                           scannedBarcode != '---' ? isScanComplete = true : debugPrint('null code received');
                           // TO DO : splash screen while getting ip and establishing connection with pc
-                          // validate barcode
+                          // TO DO : validate barcode
                           print('got a code! : $scannedBarcode');
                           Provider.of<SocketProvider>(context, listen: false).createConnection(scannedBarcode).then(
                             (value) {
@@ -65,7 +65,6 @@ class _ConnectScreenState extends State<ConnectScreen> {
                               }
                             },
                           );
-                          // TO DO : move page switch to only if connection is active
                         }
                       },
                     ),

@@ -46,7 +46,7 @@ class _UploadScreenState extends State<UploadScreen> {
             ConstrainedBox(
               constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height / 2),
               child: ListView.builder(
-                itemCount: Provider.of<FilesProvider>(context, listen: true).files.length, // TO DO : change according to file count from provider
+                itemCount: Provider.of<FilesProvider>(context, listen: true).files.length,
                 itemBuilder: (context, index) {
                   final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
                   return Container(

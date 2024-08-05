@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 
 class SocketProvider with ChangeNotifier {
-  late SecureSocket socket;
+  late Socket socket;
 
   // creates connection with pc
   // returns true if connection successful and flase if error
@@ -12,7 +12,7 @@ class SocketProvider with ChangeNotifier {
     final serverPort = code.split(':')[1];
 
     try {
-      socket = await SecureSocket.connect(serverIp, int.parse(serverPort));
+      socket = await Socket.connect(serverIp, int.parse(serverPort));
     } catch (e) {
       debugPrint(e.toString());
       return false;
@@ -28,17 +28,11 @@ class SocketProvider with ChangeNotifier {
       if (!file.existsSync()) {
         continue;
       }
-      socket.write(utf8.encode('S'));
-
-      socket.listen(
-        (data) {
-          debugPrint('Got Sending AKC (ack1) : ${String.fromCharCodes(data)}');
-        },
-      );
+      socket.write('S');
 
       final fileName = file.path.split('/').last;
       final fileSize = file.lengthSync();
-      socket.write(utf8.encode('$fileName:$fileSize'));
+      socket.write('$fileName:$fileSize');
 
       socket.listen(
         (data) {
