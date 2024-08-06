@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+import 'package:provider/provider.dart';
+import 'package:symple_mobile/providers/files_provider.dart';
+
 class SocketProvider with ChangeNotifier {
   late Socket _socket;
   late String _serverIp;
@@ -39,7 +42,7 @@ class SocketProvider with ChangeNotifier {
     return true;
   }
 
-  void sendFiles(List<File> files) async {
+  void sendFiles(List<File> files, BuildContext context) async {
     _isSending = true;
     notifyListeners();
 
@@ -66,15 +69,29 @@ class SocketProvider with ChangeNotifier {
           final message = String.fromCharCodes(data);
           debugPrint('Recived : $message');
 
+          // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize');
-          } else if (message == 'AckFile') {
+            _socket.write('$fileName:$fileSize:3');
+          }
+          // got updating protocol, send file
+          else if (message == 'AckFile') {
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
-          } else if (message == 'Fin') {
+          }
+          // updating on file progress
+          else if (message.contains('GOT')) {
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, double.parse(message.split(' ')[2]) / fileSize);
+            // TO DO : sort out GOT so we can get more than 3 updates :(
+          }
+          // finished getting file
+          else if (message == 'Fin') {
             print('File passed successful');
             sendingFile.complete();
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
             _socket.close();
-          } else {
+          }
+          // unknown or Inv- error
+          else {
             print('Error : $message');
           }
         },

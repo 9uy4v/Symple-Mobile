@@ -49,6 +49,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 itemCount: Provider.of<FilesProvider>(context, listen: true).files.length,
                 itemBuilder: (context, index) {
                   final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
+                  final fileProgress = Provider.of<FilesProvider>(context, listen: true).progressList[index];
                   return Dismissible(
                     key: Key(fileName),
                     direction: isSending ? DismissDirection.none : DismissDirection.horizontal,
@@ -67,9 +68,21 @@ class _UploadScreenState extends State<UploadScreen> {
                       children: [
                         if (isSending)
                           ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
-                            child: const CircularProgressIndicator(),
-                          ),
+                              constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
+                              child: fileProgress == 0
+                                  // if 0% -> spinning circle
+                                  ? const CircularProgressIndicator()
+                                  : fileProgress < 1 && fileProgress > 0
+                                      // if 1-99% -> progress showing circle
+                                      ? CircularProgressIndicator(
+                                          value: fileProgress,
+                                        )
+                                      // if 100% -> check
+                                      : const Icon(
+                                          Icons.check,
+                                          size: 30,
+                                          color: Colors.green,
+                                        )),
                         if (!isSending)
                           const Icon(
                             Icons.file_copy,
@@ -108,7 +121,8 @@ class _UploadScreenState extends State<UploadScreen> {
           onPressed: () {
             print('pressed send');
             if (!Provider.of<SocketProvider>(context, listen: false).isSending) {
-              Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
+              Provider.of<FilesProvider>(context, listen: false).createPrecentageList();
+              Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files, context);
             }
           },
           child: const Icon(Icons.send),
