@@ -12,9 +12,9 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  bool isSending = false;
   @override
   Widget build(context) {
+    final isSending = Provider.of<SocketProvider>(context, listen: true).isSending;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -49,41 +49,40 @@ class _UploadScreenState extends State<UploadScreen> {
                 itemCount: Provider.of<FilesProvider>(context, listen: true).files.length,
                 itemBuilder: (context, index) {
                   final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Dismissible(
-                      key: Key(fileName),
-                      background: Container(
-                        color: const Color.fromARGB(255, 225, 100, 100),
-                        child: const Icon(
-                          Icons.delete,
-                          color: Colors.white,
+                  return Dismissible(
+                    key: Key(fileName),
+                    direction: isSending ? DismissDirection.none : DismissDirection.horizontal,
+                    background: Container(
+                      padding: const EdgeInsets.all(8),
+                      color: const Color.fromARGB(255, 225, 100, 100),
+                      child: const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      Provider.of<FilesProvider>(context, listen: false).removeFile(index);
+                    },
+                    child: Row(
+                      children: [
+                        if (isSending)
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
+                            child: const CircularProgressIndicator(),
+                          ),
+                        if (!isSending)
+                          const Icon(
+                            Icons.file_copy,
+                            size: 30,
+                          ),
+                        const SizedBox(
+                          width: 15,
                         ),
-                      ),
-                      onDismissed: (direction) {
-                        Provider.of<FilesProvider>(context, listen: false).removeFile(index);
-                      },
-                      child: Row(
-                        children: [
-                          if (isSending)
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
-                              child: const CircularProgressIndicator(),
-                            ),
-                          if (!isSending)
-                            const Icon(
-                              Icons.file_copy,
-                              size: 30,
-                            ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            fileName,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-                          ),
-                        ],
-                      ),
+                        Text(
+                          fileName,
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -111,14 +110,9 @@ class _UploadScreenState extends State<UploadScreen> {
               }
             : () {
                 print('pressed send');
-                setState(() {
-                  isSending = !isSending;
-                });
-                if (isSending) {
+                if (!Provider.of<SocketProvider>(context, listen: false).isSending) {
                   Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
                 }
-                // TO DO : send files to pc, clear chosen file array
-                // TO DO : when sending make sure all files are not null in case they were deleted after being selected
               },
         child: const Icon(Icons.send),
       ),
@@ -127,7 +121,5 @@ class _UploadScreenState extends State<UploadScreen> {
 }
 
 
-// TO DO : make files not dissmissable when uploading
-// TO DO : end loading when files are sent
 // TO DO : better looking loading animations
-// TO DO : when exiting via button, send message to server to print the qr code again 
+// TO DO : when exiting via button, send message to server to print the qr code again and clear files array

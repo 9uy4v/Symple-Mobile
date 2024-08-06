@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 class SocketProvider with ChangeNotifier {
-  late Socket socket;
-  late String serverIp;
-  late int serverPort;
+  late Socket _socket;
+  late String _serverIp;
+  late int _serverPort;
+
+  bool _isSending = false;
+
+  bool get isSending => _isSending;
 
   Future<bool> handleCode(String code) async {
     // TO DO : add code verification here
-    serverIp = code.split(':')[0];
-    serverPort = int.parse(code.split(':')[1]);
+    _serverIp = code.split(':')[0];
+    _serverPort = int.parse(code.split(':')[1]);
 
     // checks if can connect
     if (await _createConnection()) {
-      socket.close();
+      _socket.close();
       return true;
     } else {
       return false;
@@ -26,7 +30,7 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      socket = await Socket.connect(serverIp, serverPort);
+      _socket = await Socket.connect(_serverIp, _serverPort);
     } catch (e) {
       debugPrint(e.toString());
       return false;
@@ -35,45 +39,52 @@ class SocketProvider with ChangeNotifier {
     return true;
   }
 
-  //  convert file to binary data to send to pc
-  // var bytes = await File('filename').readAsBytes();
   void sendFiles(List<File> files) async {
+    _isSending = true;
+    notifyListeners();
+
     for (File file in files) {
-      final Completer _sendingFile = new Completer();
+      final Completer sendingFile = Completer();
 
       // checking if can connect right now, if not returns.
       if (!await _createConnection()) {
         return;
       }
 
+      // making sure file exists (not deleted affter selected)
       if (!file.existsSync()) {
         continue;
+        // TO DO : show alert about file not found and therefore not sent
       }
-      socket.write('S');
+      _socket.write('S');
 
       final fileName = file.path.split('/').last;
       final fileSize = file.lengthSync();
 
-      socket.listen(
+      _socket.listen(
         (data) {
           final message = String.fromCharCodes(data);
           debugPrint('Recived : $message');
 
           if (message == 'AckCom') {
-            socket.write('$fileName:$fileSize');
+            _socket.write('$fileName:$fileSize');
           } else if (message == 'AckFile') {
-            socket.add(file.readAsBytesSync());
+            _socket.add(file.readAsBytesSync());
           } else if (message == 'Fin') {
             print('File passed successful');
-            _sendingFile.complete();
-            socket.close();
+            sendingFile.complete();
+            _socket.close();
           } else {
             print('Error : $message');
           }
         },
       );
 
-      await _sendingFile.future;
+      await sendingFile.future;
     }
+
+    _isSending = false;
+    files.clear();
+    notifyListeners();
   }
 }
