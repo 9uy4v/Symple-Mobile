@@ -125,3 +125,9 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 }
+
+
+// TO DO : make files not dissmissable when uploading
+// TO DO : end loading when files are sent
+// TO DO : better looking loading animations
+// TO DO : when exiting via button, send message to server to print the qr code again 

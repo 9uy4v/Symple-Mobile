@@ -61,7 +61,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                               } else {
                                 isScanComplete = false;
                                 print('can\'t connect to PC');
-                                // error connecting to pc
+                                // TO DO : show error message
                               }
                             },
                           );
