@@ -102,19 +102,17 @@ class _UploadScreenState extends State<UploadScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: Provider.of<FilesProvider>(context, listen: true).files.isEmpty
-            ? () {
-                print('choose files first');
-                // TO DO : add snackbar alert or button not shown when no files selected (preferably the last option)
-              }
-            : () {
-                print('pressed send');
-                if (!Provider.of<SocketProvider>(context, listen: false).isSending) {
-                  Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
-                }
-              },
-        child: const Icon(Icons.send),
+      floatingActionButton: Visibility(
+        visible: Provider.of<FilesProvider>(context, listen: true).files.isNotEmpty,
+        child: FloatingActionButton(
+          onPressed: () {
+            print('pressed send');
+            if (!Provider.of<SocketProvider>(context, listen: false).isSending) {
+              Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files);
+            }
+          },
+          child: const Icon(Icons.send),
+        ),
       ),
     );
   }
