@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -7,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 
 class SocketProvider with ChangeNotifier {
-  late Socket _socket;
+  late RawSocket _socket;
   late String _serverIp;
   late int _serverPort;
 
@@ -33,7 +34,7 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      _socket = await Socket.connect(_serverIp, _serverPort);
+      _socket = await RawSocket.connect(_serverIp, _serverPort);
     } catch (e) {
       debugPrint(e.toString());
       return false;
@@ -47,8 +48,6 @@ class SocketProvider with ChangeNotifier {
     notifyListeners();
 
     for (File file in files) {
-      final Completer sendingFile = Completer();
-
       // checking if can connect right now, if not returns.
       if (!await _createConnection()) {
         return;
@@ -59,45 +58,49 @@ class SocketProvider with ChangeNotifier {
         continue;
         // TO DO : show alert about file not found and therefore not sent
       }
-      _socket.write('S');
+      _socket.write(utf8.encode('S'));
 
       final fileName = file.path.split('/').last;
       final fileSize = file.lengthSync();
 
-      _socket.listen(
-        (data) {
-          final message = String.fromCharCodes(data);
-          debugPrint('Recived : $message');
+      final fileInfo = '$fileName:$fileSize:3'; // TO DO : set update number
 
-          // got intentions command, establish file info and updating protocol
-          if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:3');
-          }
-          // got updating protocol, send file
-          else if (message == 'AckFile') {
-            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 0.001);
-            _socket.add(file.readAsBytesSync());
-          }
-          // updating on file progress
-          else if (message.contains('GOT')) {
-            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, double.parse(message.split(' ')[2]) / fileSize);
-            // TO DO : sort out GOT so we can get more than 3 updates :(
-          }
-          // finished getting file
-          else if (message == 'Fin') {
-            print('File passed successful');
-            sendingFile.complete();
-            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
-            _socket.close();
-          }
-          // unknown or Inv- error
-          else {
-            print('Error : $message');
-          }
-        },
-      );
+      _socket.write(utf8.encode('${fileInfo.length.toString().padLeft(3, '0')}$fileInfo'));
 
-      await sendingFile.future;
+      Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 0.001);
+
+      _socket.write(file.readAsBytesSync());
+
+      while (_socket.available() == 0) {
+        // do nothing
+      }
+      print('ihave');
+      final data = _socket.read(3); // getting GOT message length
+
+      while (String.fromCharCodes(data!) != 'Fin') {
+        late int len;
+        // getting GOT message length
+        try {
+          len = int.parse(String.fromCharCodes(data));
+        } catch (e) {
+          debugPrint('ERROR : ${String.fromCharCodes(data)}');
+          break;
+        }
+
+        // reading and validating GOT message
+        final gotMessage = _socket.read(len);
+        if (gotMessage != null && String.fromCharCodes(gotMessage).contains('GOT')) {
+          // adding to progress bar
+          Provider.of<FilesProvider>(context, listen: false)
+              .updatePrecentage(file, double.parse(String.fromCharCodes(gotMessage).split(' ')[2]) / fileSize);
+        } else {
+          debugPrint('ERROR CODE or null : ${String.fromCharCodes(gotMessage!)}');
+        }
+      }
+
+      print('File passed successful');
+      Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
+      _socket.close();
     }
 
     _isSending = false;
