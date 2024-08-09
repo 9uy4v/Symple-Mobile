@@ -71,28 +71,27 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:3');
+            _socket.write('$fileName:$fileSize:10');
           }
           // got updating protocol, send file
-          else if (message == 'AckFile') {
+          else if (message == 'AckFle') {
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
           }
+          // unknown or Inv- error
+          else if (!message.contains('GOT') && !message.contains('Fin')) {
+            print('Error : $message');
+          }
           // updating on file progress
-          else if (message.contains('GOT')) {
+          if (message.contains('GOT')) {
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, double.parse(message.split(' ')[2]) / fileSize);
-            // TO DO : sort out GOT so we can get more than 3 updates :(
           }
           // finished getting file
-          else if (message == 'Fin') {
+          if (message.contains('Fin')) {
             print('File passed successful');
             sendingFile.complete();
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
             _socket.close();
-          }
-          // unknown or Inv- error
-          else {
-            print('Error : $message');
           }
         },
       );
