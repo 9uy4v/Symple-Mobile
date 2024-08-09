@@ -63,7 +63,7 @@ class SocketProvider with ChangeNotifier {
       final fileName = file.path.split('/').last;
       final fileSize = file.lengthSync();
 
-      final fileInfo = '$fileName:$fileSize:3'; // TO DO : set update number
+      final fileInfo = '$fileName:$fileSize:100'; // TO DO : set update number
 
       _socket.write(utf8.encode('${fileInfo.length.toString().padLeft(3, '0')}$fileInfo'));
 
@@ -71,19 +71,25 @@ class SocketProvider with ChangeNotifier {
 
       _socket.write(file.readAsBytesSync());
 
-      while (_socket.available() == 0) {
-        // do nothing
-      }
-      print('ihave');
-      final data = _socket.read(3); // getting GOT message length
+      var data;
+      do {
+        while (_socket.available() == 0 || data == null) {
+          // do nothing
+          data = _socket.read(3);
+        }
 
-      while (String.fromCharCodes(data!) != 'Fin') {
+        if (String.fromCharCodes(data!) == 'Fin') {
+          break;
+        }
+
         late int len;
         // getting GOT message length
         try {
           len = int.parse(String.fromCharCodes(data));
+          print('got GOT message \nlength : $len');
         } catch (e) {
           debugPrint('ERROR : ${String.fromCharCodes(data)}');
+          // TO DO : show to user that file failed to upload
           break;
         }
 
@@ -91,12 +97,13 @@ class SocketProvider with ChangeNotifier {
         final gotMessage = _socket.read(len);
         if (gotMessage != null && String.fromCharCodes(gotMessage).contains('GOT')) {
           // adding to progress bar
+          print('updating precentage according to message : ${utf8.decode(gotMessage)}');
           Provider.of<FilesProvider>(context, listen: false)
-              .updatePrecentage(file, double.parse(String.fromCharCodes(gotMessage).split(' ')[2]) / fileSize);
+              .updatePrecentage(file, double.parse(String.fromCharCodes(gotMessage).split(' ')[1]) / fileSize);
         } else {
           debugPrint('ERROR CODE or null : ${String.fromCharCodes(gotMessage!)}');
         }
-      }
+      } while (true);
 
       print('File passed successful');
       Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
