@@ -80,7 +80,10 @@ class SocketProvider with ChangeNotifier {
           }
           // unknown or Inv- error
           else if (!message.contains('GOT') && !message.contains('Fin')) {
+            // TO DO : change to if INV ^
             print('Error : $message');
+            // updating to error code
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, -1);
           }
           // updating on file progress
           if (message.contains('GOT')) {

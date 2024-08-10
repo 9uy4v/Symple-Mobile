@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
+import 'package:symple_mobile/widgets/file_loading_circle.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -50,52 +51,62 @@ class _UploadScreenState extends State<UploadScreen> {
                 itemBuilder: (context, index) {
                   final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
                   final fileProgress = Provider.of<FilesProvider>(context, listen: true).progressList[index];
-                  return Dismissible(
-                    key: Key(fileName),
-                    direction: isSending ? DismissDirection.none : DismissDirection.horizontal,
-                    background: Container(
-                      padding: const EdgeInsets.all(8),
-                      color: const Color.fromARGB(255, 225, 100, 100),
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                    child: Dismissible(
+                      key: Key(fileName),
+                      direction: isSending ? DismissDirection.none : DismissDirection.horizontal,
+                      background: Container(
+                        padding: const EdgeInsets.all(8),
+                        color: const Color.fromARGB(255, 225, 100, 100),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    onDismissed: (direction) {
-                      Provider.of<FilesProvider>(context, listen: false).removeFile(index);
-                    },
-                    child: Row(
-                      children: [
-                        if (isSending)
-                          ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
-                              child: fileProgress == 0
-                                  // if 0% -> spinning circle
-                                  ? const CircularProgressIndicator()
-                                  : fileProgress < 1 && fileProgress > 0
-                                      // if 1-99% -> progress showing circle
-                                      ? CircularProgressIndicator(
-                                          value: fileProgress,
-                                        )
-                                      // if 100% -> check
-                                      : const Icon(
-                                          Icons.check,
-                                          size: 30,
-                                          color: Colors.green,
-                                        )),
-                        if (!isSending)
-                          const Icon(
-                            Icons.file_copy,
-                            size: 30,
-                          ),
-                        const SizedBox(
-                          width: 15,
+                      onDismissed: (direction) {
+                        Provider.of<FilesProvider>(context, listen: false).removeFile(index);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromARGB(131, 235, 228, 234),
+                                blurRadius: 3,
+                                spreadRadius: 2,
+                              )
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: const Color.fromARGB(255, 235, 228, 234),
+                              width: 2,
+                            )),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Icon(
+                              Icons.file_copy, // TO DO : replace with icon according to file type
+                              size: 30,
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              fileName, // TO DO : handle long file names
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                            ),
+                            const Spacer(),
+                            if (isSending) CircularUploadIndicator(progress: fileProgress),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                          ],
                         ),
-                        Text(
-                          fileName,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 },
@@ -131,7 +142,6 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 }
-
 
 // TO DO : better looking loading animations
 // TO DO : when exiting via button, send message to server to print the qr code again and clear files array
