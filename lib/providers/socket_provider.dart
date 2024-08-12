@@ -85,7 +85,7 @@ class SocketProvider with ChangeNotifier {
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, -1);
           }
           // updating on file progress
-          if (message.contains('GOT')) {
+          else if (message.contains('GOT')) {
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]) / fileSize);
           }
           // finished getting file
