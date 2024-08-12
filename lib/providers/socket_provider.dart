@@ -71,7 +71,7 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:10'); // TO DO : calculate according to size of file
+            _socket.write('$fileName:$fileSize:10'); // TO DO : calculate update number according to size of file
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {
@@ -79,8 +79,7 @@ class SocketProvider with ChangeNotifier {
             _socket.add(file.readAsBytesSync());
           }
           // unknown or Inv- error
-          else if (!message.contains('GOT') && !message.contains('Fin')) {
-            // TO DO : change to if INV ^
+          else if (message.contains('Inv')) {
             print('Error : $message');
             // updating to error code
             Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, -1);

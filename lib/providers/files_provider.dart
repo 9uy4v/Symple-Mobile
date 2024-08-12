@@ -12,7 +12,6 @@ class FilesProvider with ChangeNotifier {
 
   void createPrecentageList() {
     _uploadedPrecentage = List<double>.generate(_selectedFiles.length, (i) => 0);
-    notifyListeners(); // TO DO : maybe not needed
   }
 
   void updatePrecentage(File file, double precentage) {
@@ -52,6 +51,6 @@ class FilesProvider with ChangeNotifier {
     if (bytes <= 0) return "0 B";
     const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(1))  + suffixes[i];
+    return ((bytes / pow(1024, i)).toStringAsFixed(1)) + suffixes[i];
   }
 }

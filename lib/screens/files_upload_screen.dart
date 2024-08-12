@@ -107,7 +107,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   Flexible(
                                     flex: 3,
                                     child: Text(
-                                      fileName, // TO DO : handle long file names
+                                      fileName, 
                                       overflow: TextOverflow.fade,
                                       softWrap: false,
                                       style: const TextStyle(
@@ -181,5 +181,4 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 }
 
-// TO DO : better looking loading animations
 // TO DO : when exiting via button, send message to server to print the qr code again and clear files array
