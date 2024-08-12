@@ -71,7 +71,7 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:10');
+            _socket.write('$fileName:$fileSize:10'); // TO DO : calculate according to size of file
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {

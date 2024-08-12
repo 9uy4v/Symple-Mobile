@@ -19,6 +19,7 @@ class _UploadScreenState extends State<UploadScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        forceMaterialTransparency: true,
         actions: [
           IconButton(
               onPressed: () {
@@ -49,7 +50,8 @@ class _UploadScreenState extends State<UploadScreen> {
               child: ListView.builder(
                 itemCount: Provider.of<FilesProvider>(context, listen: true).files.length,
                 itemBuilder: (context, index) {
-                  final fileName = Provider.of<FilesProvider>(context, listen: false).files[index].path.split('/').last;
+                  final currentFile = Provider.of<FilesProvider>(context, listen: false).files[index];
+                  final fileName = currentFile.path.split('/').last;
                   final fileProgress = Provider.of<FilesProvider>(context, listen: true).progressList[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -65,7 +67,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         ),
                       ),
                       onDismissed: (direction) {
-                        Provider.of<FilesProvider>(context, listen: false).removeFile(index);
+                        Provider.of<FilesProvider>(context, listen: false).removeFileByIndex(index);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8),
@@ -73,14 +75,14 @@ class _UploadScreenState extends State<UploadScreen> {
                             color: Theme.of(context).scaffoldBackgroundColor,
                             boxShadow: const [
                               BoxShadow(
-                                color: Color.fromARGB(131, 235, 228, 234),
+                                color: Color.fromARGB(56, 235, 228, 234),
                                 blurRadius: 3,
                                 spreadRadius: 2,
                               )
                             ],
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color.fromARGB(255, 235, 228, 234),
+                              color: const Color.fromARGB(255, 246, 238, 244),
                               width: 2,
                             )),
                         child: Row(
@@ -88,19 +90,55 @@ class _UploadScreenState extends State<UploadScreen> {
                             const SizedBox(
                               width: 5,
                             ),
-                            const Icon(
-                              Icons.file_copy, // TO DO : replace with icon according to file type
-                              size: 30,
+                            const Flexible(
+                              flex: 1,
+                              child: Icon(
+                                Icons.file_copy, // TO DO : replace with icon according to file type
+                                size: 30,
+                              ),
                             ),
                             const SizedBox(
                               width: 15,
                             ),
-                            Text(
-                              fileName, // TO DO : handle long file names
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+                            Flexible(
+                              flex: 6,
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    flex: 3,
+                                    child: Text(
+                                      fileName, // TO DO : handle long file names
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      Provider.of<FilesProvider>(context, listen: false).getFileSizeString(currentFile),
+                                      softWrap: false,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: Color.fromARGB(255, 96, 96, 96),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const Spacer(),
-                            if (isSending) CircularUploadIndicator(progress: fileProgress),
+                            if (isSending)
+                              Flexible(
+                                flex: 1,
+                                child: CircularUploadIndicator(progress: fileProgress),
+                              ),
                             const SizedBox(
                               width: 5,
                             ),
@@ -127,11 +165,11 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: Provider.of<FilesProvider>(context, listen: true).files.isNotEmpty,
+        visible: Provider.of<FilesProvider>(context, listen: true).files.isNotEmpty && !isSending,
         child: FloatingActionButton(
           onPressed: () {
             print('pressed send');
-            if (!Provider.of<SocketProvider>(context, listen: false).isSending) {
+            if (!isSending) {
               Provider.of<FilesProvider>(context, listen: false).createPrecentageList();
               Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files, context);
             }
