@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
@@ -90,11 +91,13 @@ class _UploadScreenState extends State<UploadScreen> {
                             const SizedBox(
                               width: 5,
                             ),
-                            const Flexible(
+                            Flexible(
                               flex: 1,
-                              child: Icon(
-                                Icons.file_copy, // TO DO : replace with icon according to file type
-                                size: 30,
+                              // TO DO : file icons are not constant sizes
+                              child: SvgPicture.asset(
+                                Provider.of<FilesProvider>(context, listen: false).getFileIconPath(
+                                  fileName.split('.').last,
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -107,7 +110,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                   Flexible(
                                     flex: 3,
                                     child: Text(
-                                      fileName, 
+                                      fileName,
                                       overflow: TextOverflow.fade,
                                       softWrap: false,
                                       style: const TextStyle(
