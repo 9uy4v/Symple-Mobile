@@ -4,8 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class FilesProvider with ChangeNotifier {
-  final Map<String, Icon> fileIcons = {
-    "jpg": Icon(Icons.javascript),
+  final Map<List<String>, String> fileIcons = {
+    ['wav', 'aiff', 'mp3']: 'path', // pictures
   };
   final List<File> _selectedFiles = [];
   late List<double> _uploadedPrecentage;
