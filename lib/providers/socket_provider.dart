@@ -15,6 +15,19 @@ class SocketProvider with ChangeNotifier {
 
   bool get isSending => _isSending;
 
+  // creates connection with pc
+  // returns true if connection successful and false if error
+  Future<bool> _createConnection() async {
+    try {
+      _socket = await Socket.connect(_serverIp, _serverPort);
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+
+    return true;
+  }
+
   Future<bool> handleCode(String code) async {
     // TO DO : add code verification here
     _serverIp = code.split(':')[0];
@@ -27,19 +40,6 @@ class SocketProvider with ChangeNotifier {
     } else {
       return false;
     }
-  }
-
-  // creates connection with pc
-  // returns true if connection successful and false if error
-  Future<bool> _createConnection() async {
-    try {
-      _socket = await Socket.connect(_serverIp, _serverPort);
-    } catch (e) {
-      debugPrint(e.toString());
-      return false;
-    }
-
-    return true;
   }
 
   void sendFiles(List<File> files, BuildContext context) async {
@@ -64,6 +64,9 @@ class SocketProvider with ChangeNotifier {
       final fileName = file.path.split('/').last;
       final fileSize = file.lengthSync();
 
+      // TO DO : hardcode this on the python server side :
+      final updateNum = 3 * (fileSize / 1000000).ceil(); // 3 updates per megabyte
+
       _socket.listen(
         (data) {
           final message = String.fromCharCodes(data);
@@ -71,7 +74,7 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:10'); // TO DO : calculate update number according to size of file
+            _socket.write('$fileName:$fileSize:$updateNum');
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {

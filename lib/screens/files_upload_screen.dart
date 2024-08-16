@@ -98,6 +98,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                 Provider.of<FilesProvider>(context, listen: false).getFileIconPath(
                                   fileName.split('.').last,
                                 ),
+                                height: 25,
+                                fit: BoxFit.fitHeight,
                               ),
                             ),
                             const SizedBox(
