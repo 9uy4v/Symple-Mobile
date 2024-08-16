@@ -95,7 +95,6 @@ class _UploadScreenState extends State<UploadScreen> {
                             ),
                             Flexible(
                               flex: 1,
-                              // TO DO : file icons are not constant sizes
                               child: SvgPicture.asset(
                                 Provider.of<FilesProvider>(context, listen: false).getFileIconPath(
                                   fileName.split('.').last,
