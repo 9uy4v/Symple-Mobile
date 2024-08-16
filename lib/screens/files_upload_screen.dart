@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:symple_mobile/main.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
@@ -17,6 +18,7 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(context) {
     final isSending = Provider.of<SocketProvider>(context, listen: true).isSending;
+    publicContext = context;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

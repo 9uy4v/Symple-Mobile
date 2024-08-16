@@ -8,10 +8,13 @@ void main() {
   runApp(const MyApp());
 }
 
+late BuildContext publicContext;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    publicContext = context;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: SocketProvider()),
