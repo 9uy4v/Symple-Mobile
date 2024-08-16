@@ -2,6 +2,12 @@ import 'dart:io';
 import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// riverpod refrance to regular provider for access without context
+final filesRiverProvider = ChangeNotifierProvider<FilesProvider>(
+  (ref) => FilesProvider(),
+);
 
 class FilesProvider with ChangeNotifier {
   // TO DO : consider making a lot of files with the file extention  built into the name

@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as reg_prov;
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:symple_mobile/screens/files_upload_screen.dart';
 import 'package:symple_mobile/widgets/qr_scanner_overlay.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 
-class ConnectScreen extends StatefulWidget {
-  const ConnectScreen({super.key});
+// ignore: must_be_immutable
+class ConnectScreen extends ConsumerWidget {
+  ConnectScreen({super.key});
 
-  @override
-  State<ConnectScreen> createState() => _ConnectScreenState();
-}
-
-class _ConnectScreenState extends State<ConnectScreen> {
   bool isScanComplete = false;
 
   @override
-  Widget build(context) {
+  Widget build(context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -49,7 +46,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                           // TO DO : splash screen while getting ip and establishing connection with pc
                           // TO DO : validate barcode
                           print('got a code! : $scannedBarcode');
-                          Provider.of<SocketProvider>(context, listen: false).handleCode(scannedBarcode).then(
+                          reg_prov.Provider.of<SocketProvider>(context, listen: false).handleCode(scannedBarcode, ref).then(
                             (value) {
                               // TO DO : exit splash screen
                               if (value) {
