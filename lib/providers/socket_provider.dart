@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
+
+import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 
 class SocketProvider with ChangeNotifier {
@@ -33,7 +34,7 @@ class SocketProvider with ChangeNotifier {
     return true;
   }
 
-  Future<bool> handleCode(String code, WidgetRef ref) async {
+  Future<bool> handleCode(String code) async {
     // TO DO : add code verification here
     _serverIp = code.split(':')[0];
     _serverPort = int.parse(code.split(':')[1]);
@@ -51,24 +52,24 @@ class SocketProvider with ChangeNotifier {
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {
-            ref.read(filesRiverProvider.notifier).updatePrecentage(file, 0.0001);
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {
             print('Error : $message');
             // updating to error code
-            ref.read(filesRiverProvider.notifier).updatePrecentage(file, -1);
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, -1);
           }
           // updating on file progress
           else if (message.contains('GOT')) {
-            ref.read(filesRiverProvider.notifier).updatePrecentage(file, double.parse(message.split(' ')[1]) / fileSize);
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]) / fileSize);
           }
           // finished getting file
           if (message.contains('Fin')) {
-            print('File passed successfully');
+            print('File passed successful');
             sendingFile.complete();
-            ref.read(filesRiverProvider.notifier).updatePrecentage(file, 1);
+            Provider.of<FilesProvider>(context, listen: false).updatePrecentage(file, 1);
           }
         },
       );

@@ -27,7 +27,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ConnectScreen(),
+                      builder: (context) => const ConnectScreen(),
                     ));
               },
               icon: const Icon(Icons.logout))
