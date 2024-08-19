@@ -10,31 +10,6 @@ final filesRiverProvider = ChangeNotifierProvider<FilesProvider>(
 );
 
 class FilesProvider with ChangeNotifier {
-  // TO DO : consider making a lot of files with the file extention  built into the name
-  //          for easy addition and change of icons for individual file extentions
-  final Map<String, String> _fileIconsPath = {
-    'mp3': 'assets/icons/audio.svg', // audio
-    'aiff': 'assets/icons/audio.svg', // audio
-    'wav': 'assets/icons/audio.svg', // audio
-    'jpeg': 'assets/icons/image.svg', // images (and gif)
-    'jpg': 'assets/icons/image.svg', // images (and gif)
-    'png': 'assets/icons/image.svg', // images (and gif)
-    'tiff': 'assets/icons/image.svg', // images (and gif)
-    'gif': 'assets/icons/image.svg', // images (and gif)
-    'avi': 'assets/icons/video.svg', // video
-    'mp4': 'assets/icons/video.svg', // video
-    'wmv': 'assets/icons/video.svg', // video
-    'html': 'assets/icons/http.svg', // internet
-    'http': 'assets/icons/http.svg', // internet
-    'doc': 'assets/icons/word.svg', // word documents
-    'docx': 'assets/icons/word.svg', // word documents
-    'txt': 'assets/icons/document.svg', // text documents
-    'eml': 'assets/icons/email.svg', // emails
-    'exe': 'assets/icons/exe.svg', // exe
-    'pdf': 'assets/icons/pdf.svg', // pdf
-    'pptx': 'assets/icons/powerpoint.svg', // slideshows
-    'zip': 'assets/icons/zip.svg', // zip
-  };
   final List<File> _selectedFiles = [];
   late List<double> _uploadedPrecentage;
 
@@ -42,10 +17,10 @@ class FilesProvider with ChangeNotifier {
   List<double> get progressList => _uploadedPrecentage;
 
   String getFileIconPath(String fileExtention) {
-    if (!_fileIconsPath.containsKey(fileExtention)) {
+    if (!File('assets/icons/$fileExtention.svg').existsSync()) {
       return 'assets/icons/file.svg';
     }
-    return _fileIconsPath[fileExtention]!;
+    return 'assets/icons/$fileExtention.svg';
   }
 
   void createPrecentageList() {

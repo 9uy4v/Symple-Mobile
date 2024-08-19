@@ -18,7 +18,6 @@ class SocketProvider with ChangeNotifier {
   late File file;
   late String fileName;
   late int fileSize;
-  late int updateNum;
 
   bool get isSending => _isSending;
 
@@ -49,7 +48,7 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info and updating protocol
           if (message == 'AckCom') {
-            _socket.write('$fileName:$fileSize:$updateNum');
+            _socket.write('$fileName:$fileSize');
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {
@@ -64,7 +63,7 @@ class SocketProvider with ChangeNotifier {
           }
           // updating on file progress
           else if (message.contains('GOT')) {
-            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]) / fileSize);
+            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]));
           }
           // finished getting file
           if (message.contains('Fin')) {
@@ -96,8 +95,6 @@ class SocketProvider with ChangeNotifier {
       // setting all variables needed for transfer
       fileName = curFile.path.split('/').last;
       fileSize = curFile.lengthSync();
-      // TO DO : hardcode this on the python server side :
-      updateNum = 3 * (fileSize / 1000000).ceil(); // 3 updates per megabyte
 
       _socket.write('S');
 
