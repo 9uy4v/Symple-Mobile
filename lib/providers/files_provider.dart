@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 // riverpod refrance to regular provider for access without context
 final filesRiverProvider = ChangeNotifierProvider<FilesProvider>(
@@ -18,12 +17,10 @@ class FilesProvider with ChangeNotifier {
   List<double> get progressList => _uploadedPrecentage;
 
   String getFileIconPath(String fileExtention) {
-    try {
-      SvgPicture.asset('assets/icons/$fileExtention.svg');
-      return 'assets/icons/$fileExtention.svg';
-    } catch (e) {
+    if (!File('assets/icons/$fileExtention.svg').existsSync()) {
       return 'assets/icons/file.svg';
     }
+    return 'assets/icons/$fileExtention.svg';
   }
 
   void createPrecentageList() {
