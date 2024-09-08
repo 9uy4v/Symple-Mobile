@@ -25,7 +25,11 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      _socket = await Socket.connect(_serverIp, _serverPort);
+      _socket = await Socket.connect(
+        _serverIp,
+        _serverPort,
+        timeout: const Duration(seconds: 10),
+      );
     } catch (e) {
       debugPrint(e.toString());
       return false;

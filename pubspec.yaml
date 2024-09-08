@@ -71,28 +71,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - assets/icons/aiff.svg
-  - assets/icons/avi.svg
-  - assets/icons/doc.svg
-  - assets/icons/docx.svg
-  - assets/icons/eml.svg
-  - assets/icons/exe.svg
-  - assets/icons/file.svg
-  - assets/icons/gif.svg
-  - assets/icons/html.svg
-  - assets/icons/http.svg
-  - assets/icons/jpeg.svg
-  - assets/icons/jpg.svg
-  - assets/icons/mp3.svg 
-  - assets/icons/mp4.svg 
-  - assets/icons/pdf.svg 
-  - assets/icons/png.svg 
-  - assets/icons/pptx.svg 
-  - assets/icons/tiff.svg 
-  - assets/icons/txt.svg 
-  - assets/icons/wav.svg 
-  - assets/icons/wmv.svg 
-  - assets/icons/zip.svg 
+  - assets/icons/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
