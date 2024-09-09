@@ -46,19 +46,26 @@ class _ConnectScreenState extends State<ConnectScreen> {
                     child: MobileScanner(
                       onDetect: (barcodes) {
                         if (!isScanComplete) {
-                          String scannedBarcode = barcodes.barcodes.last.rawValue ?? '---';
-                          scannedBarcode != '---' ? isScanComplete = true : debugPrint('null code received'); // TO DO : delete when validator added
+                          String scannedBarcode =
+                              barcodes.barcodes.last.rawValue ?? '---';
+                          scannedBarcode != '---'
+                              ? isScanComplete = true
+                              : debugPrint(
+                                  'null code received'); // TO DO : delete when validator added
                           // TO DO : splash screen while getting ip and establishing connection with pc
                           // TO DO : validate barcode
                           print('got a code! : $scannedBarcode');
-                          Provider.of<SocketProvider>(context, listen: false).handleCode(scannedBarcode).then(
+                          Provider.of<SocketProvider>(context, listen: false)
+                              .handleCode(scannedBarcode)
+                              .then(
                             (value) {
                               // TO DO : exit splash screen
                               if (value) {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const UploadScreen(),
+                                      builder: (context) =>
+                                          const UploadScreen(),
                                     ));
                               } else {
                                 isScanComplete = false;
@@ -71,7 +78,8 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       },
                     ),
                   ),
-                  QRScannerOverlay(overlayColour: Theme.of(context).scaffoldBackgroundColor),
+                  QRScannerOverlay(
+                      overlayColour: Theme.of(context).scaffoldBackgroundColor),
                   GestureDetector(
                     onTap: () => isScanComplete = false,
                   ),

@@ -214,5 +214,3 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 }
-
-// TO DO : when exiting via button, send message to server to print the qr code again and clear files array

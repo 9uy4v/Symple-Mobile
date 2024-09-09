@@ -59,6 +59,7 @@ class SocketProvider with ChangeNotifier {
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
+            // TO DO : add timeout and alert user if file is not sent
             // TO DO : change the function to send the file in little packets so user can cancel mid upload or quit mid upload.
           }
           // unknown or Inv- error
