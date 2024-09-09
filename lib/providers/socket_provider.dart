@@ -8,7 +8,7 @@ import 'package:symple_mobile/main.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
 
 class SocketProvider with ChangeNotifier {
-  late Socket _socket;
+  late SecureSocket _socket;
   late String _serverIp;
   late int _serverPort;
 
@@ -25,7 +25,7 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      _socket = await Socket.connect(
+      _socket = await SecureSocket.connect(
         _serverIp,
         _serverPort,
         timeout: const Duration(seconds: 10),
