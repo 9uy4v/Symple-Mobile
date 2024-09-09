@@ -25,9 +25,12 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
+      final secContext = SecurityContext();
+      secContext.minimumTlsProtocolVersion = TlsProtocolVersion.tls1_3;
       _socket = await SecureSocket.connect(
         _serverIp,
         _serverPort,
+        context: secContext,
         timeout: const Duration(seconds: 10),
       );
     } catch (e) {
@@ -56,8 +59,7 @@ class SocketProvider with ChangeNotifier {
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {
-            Provider.of<FilesProvider>(publicContext, listen: false)
-                .updatePrecentage(file, 0.001);
+            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
             // TO DO : add timeout and alert user if file is not sent
             // TO DO : change the function to send the file in little packets so user can cancel mid upload or quit mid upload.
@@ -66,20 +68,17 @@ class SocketProvider with ChangeNotifier {
           else if (message.contains('Inv')) {
             print('Error : $message');
             // updating to error code
-            Provider.of<FilesProvider>(publicContext, listen: false)
-                .updatePrecentage(file, -1);
+            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, -1);
           }
           // updating on file progress
           else if (message.contains('GOT')) {
-            Provider.of<FilesProvider>(publicContext, listen: false)
-                .updatePrecentage(file, double.parse(message.split(' ')[1]));
+            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]));
           }
           // finished getting file
           if (message.contains('Fin')) {
             print('File passed successful');
             sendingFile.complete();
-            Provider.of<FilesProvider>(publicContext, listen: false)
-                .updatePrecentage(file, 1);
+            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, 1);
           }
         },
       );
