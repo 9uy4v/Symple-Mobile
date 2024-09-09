@@ -25,12 +25,10 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      final secContext = SecurityContext();
-      secContext.minimumTlsProtocolVersion = TlsProtocolVersion.tls1_3;
       _socket = await SecureSocket.connect(
         _serverIp,
         _serverPort,
-        context: secContext,
+        context: SecurityContext.defaultContext, // maybe not needed but addded just in case
         timeout: const Duration(seconds: 10),
       );
     } catch (e) {
