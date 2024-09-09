@@ -56,24 +56,29 @@ class SocketProvider with ChangeNotifier {
           }
           // got updating protocol, send file
           else if (message == 'AckFle') {
-            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, 0.001);
+            Provider.of<FilesProvider>(publicContext, listen: false)
+                .updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
+            // TO DO : change the function to send the file in little packets so user can cancel mid upload or quit mid upload.
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {
             print('Error : $message');
             // updating to error code
-            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, -1);
+            Provider.of<FilesProvider>(publicContext, listen: false)
+                .updatePrecentage(file, -1);
           }
           // updating on file progress
           else if (message.contains('GOT')) {
-            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, double.parse(message.split(' ')[1]));
+            Provider.of<FilesProvider>(publicContext, listen: false)
+                .updatePrecentage(file, double.parse(message.split(' ')[1]));
           }
           // finished getting file
           if (message.contains('Fin')) {
             print('File passed successful');
             sendingFile.complete();
-            Provider.of<FilesProvider>(publicContext, listen: false).updatePrecentage(file, 1);
+            Provider.of<FilesProvider>(publicContext, listen: false)
+                .updatePrecentage(file, 1);
           }
         },
       );
@@ -108,5 +113,11 @@ class SocketProvider with ChangeNotifier {
     _isSending = false;
     files.clear();
     notifyListeners();
+  }
+
+  void disconnect() {
+    _socket.write('Q');
+    _socket.close();
+    _isSending = false;
   }
 }

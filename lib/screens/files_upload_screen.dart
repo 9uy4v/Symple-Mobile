@@ -17,7 +17,8 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(context) {
-    final isSending = Provider.of<SocketProvider>(context, listen: true).isSending;
+    final isSending =
+        Provider.of<SocketProvider>(context, listen: true).isSending;
     publicContext = context;
     return Scaffold(
       appBar: AppBar(
@@ -26,6 +27,10 @@ class _UploadScreenState extends State<UploadScreen> {
         actions: [
           IconButton(
               onPressed: () {
+                Provider.of<FilesProvider>(context, listen: false)
+                    .clearFilesList();
+                Provider.of<SocketProvider>(context, listen: false)
+                    .disconnect();
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -49,18 +54,28 @@ class _UploadScreenState extends State<UploadScreen> {
               height: 20,
             ),
             ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height / 2),
+              constraints: BoxConstraints(
+                  maxHeight: MediaQuery.sizeOf(context).height / 2),
               child: ListView.builder(
-                itemCount: Provider.of<FilesProvider>(context, listen: true).files.length,
+                itemCount: Provider.of<FilesProvider>(context, listen: true)
+                    .files
+                    .length,
                 itemBuilder: (context, index) {
-                  final currentFile = Provider.of<FilesProvider>(context, listen: false).files[index];
+                  final currentFile =
+                      Provider.of<FilesProvider>(context, listen: false)
+                          .files[index];
                   final fileName = currentFile.path.split('/').last;
-                  final fileProgress = Provider.of<FilesProvider>(context, listen: true).progressList[index];
+                  final fileProgress =
+                      Provider.of<FilesProvider>(context, listen: true)
+                          .progressList[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                     child: Dismissible(
                       key: Key(fileName),
-                      direction: isSending ? DismissDirection.none : DismissDirection.horizontal,
+                      direction: isSending
+                          ? DismissDirection.none
+                          : DismissDirection.horizontal,
                       background: Container(
                         padding: const EdgeInsets.all(8),
                         color: const Color.fromARGB(255, 225, 100, 100),
@@ -70,7 +85,8 @@ class _UploadScreenState extends State<UploadScreen> {
                         ),
                       ),
                       onDismissed: (direction) {
-                        Provider.of<FilesProvider>(context, listen: false).removeFileByIndex(index);
+                        Provider.of<FilesProvider>(context, listen: false)
+                            .removeFileByIndex(index);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8),
@@ -96,7 +112,9 @@ class _UploadScreenState extends State<UploadScreen> {
                             Flexible(
                               flex: 1,
                               child: SvgPicture.asset(
-                                Provider.of<FilesProvider>(context, listen: false).getFileIconPath(
+                                Provider.of<FilesProvider>(context,
+                                        listen: false)
+                                    .getFileIconPath(
                                   fileName.split('.').last,
                                 ),
                                 height: 25,
@@ -127,7 +145,9 @@ class _UploadScreenState extends State<UploadScreen> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      Provider.of<FilesProvider>(context, listen: false).getFileSizeString(currentFile),
+                                      Provider.of<FilesProvider>(context,
+                                              listen: false)
+                                          .getFileSizeString(currentFile),
                                       softWrap: false,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
@@ -143,7 +163,8 @@ class _UploadScreenState extends State<UploadScreen> {
                             if (isSending)
                               Flexible(
                                 flex: 1,
-                                child: CircularUploadIndicator(progress: fileProgress),
+                                child: CircularUploadIndicator(
+                                    progress: fileProgress),
                               ),
                             const SizedBox(
                               width: 5,
@@ -160,7 +181,8 @@ class _UploadScreenState extends State<UploadScreen> {
               onPressed: isSending
                   ? null
                   : () {
-                      Provider.of<FilesProvider>(context, listen: false).selectFiles();
+                      Provider.of<FilesProvider>(context, listen: false)
+                          .selectFiles();
                     },
               icon: const Icon(
                 Icons.add,
@@ -171,13 +193,19 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       ),
       floatingActionButton: Visibility(
-        visible: Provider.of<FilesProvider>(context, listen: true).files.isNotEmpty && !isSending,
+        visible: Provider.of<FilesProvider>(context, listen: true)
+                .files
+                .isNotEmpty &&
+            !isSending,
         child: FloatingActionButton(
           onPressed: () {
             print('pressed send');
             if (!isSending) {
-              Provider.of<FilesProvider>(context, listen: false).createPrecentageList();
-              Provider.of<SocketProvider>(context, listen: false).sendFiles(Provider.of<FilesProvider>(context, listen: false).files, context);
+              Provider.of<FilesProvider>(context, listen: false)
+                  .createPrecentageList();
+              Provider.of<SocketProvider>(context, listen: false).sendFiles(
+                  Provider.of<FilesProvider>(context, listen: false).files,
+                  context);
             }
           },
           child: const Icon(Icons.send),
