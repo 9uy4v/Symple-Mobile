@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:symple_mobile/main.dart';
+import 'package:symple_mobile/providers/settings_provider.dart';
 import 'package:symple_mobile/screens/files_upload_screen.dart';
 import 'package:symple_mobile/widgets/qr_scanner_overlay.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
@@ -22,6 +23,13 @@ class _ConnectScreenState extends State<ConnectScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            // TO DO : change ThemeData - Light <-> Dark
+            Provider.of<SettingsProvider>(context, listen: false).switchTheme();
+          },
+          icon: const Icon(Icons.settings),
+        ),
       ),
       body: Center(
         child: Column(

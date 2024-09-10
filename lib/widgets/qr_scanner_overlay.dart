@@ -7,15 +7,21 @@ class QRScannerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 225.0 : 265.0;
+    double scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 225.0
+        : 265.0;
     return Stack(children: [
       ColorFiltered(
-        colorFilter: ColorFilter.mode(overlayColour, BlendMode.srcOut), // This one will create the magic
+        colorFilter: ColorFilter.mode(
+            overlayColour, BlendMode.srcOut), // This one will create the magic
         child: Stack(
           children: [
             Container(
-              decoration:
-                  const BoxDecoration(color: Colors.red, backgroundBlendMode: BlendMode.dstOut), // This one will handle background + difference out
+              decoration: const BoxDecoration(
+                  color: Colors.red,
+                  backgroundBlendMode: BlendMode
+                      .dstOut), // This one will handle background + difference out
             ),
             Align(
               alignment: Alignment.center,
@@ -94,7 +100,8 @@ class BorderPainter extends CustomPainter {
     canvas.drawRRect(
       rrect,
       Paint()
-        ..color = const Color.fromARGB(255, 215, 106, 240)
+        ..color = const Color.fromARGB(255, 215, 106,
+            240) // TO DO : choose from Theme and make red when error
         ..style = PaintingStyle.stroke
         ..strokeWidth = width,
     );
@@ -120,7 +127,8 @@ class OverlayWithHolePainter extends CustomPainter {
           PathOperation.difference,
           Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height)),
           Path()
-            ..addOval(Rect.fromCircle(center: Offset(size.width - 44, size.height - 44), radius: 40))
+            ..addOval(Rect.fromCircle(
+                center: Offset(size.width - 44, size.height - 44), radius: 40))
             ..close(),
         ),
         paint);
