@@ -30,6 +30,8 @@ class SocketProvider with ChangeNotifier {
       final cert = await rootBundle.load('assets/certificate.pem');
       ctx.useCertificateChainBytes(cert.buffer.asUint8List());
 
+      //TODO: Make flutter/dart accept self signed certificates and make sure that own certificate chain is generated dynamically.
+
       _socket = await SecureSocket.connect(
         _serverIp,
         _serverPort,
