@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
@@ -14,7 +15,7 @@ import 'package:symple_mobile/screens/connection_screen.dart';
 
 //TO DO : ...more neat features :)
 
-StreamController<bool> isLightMode = StreamController();
+StreamController<ThemeMode> themeMode = StreamController();
 
 void main() {
   runApp(const MyApp());
@@ -35,19 +36,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: FilesProvider()),
       ],
       child: StreamBuilder(
-          initialData: ThemeMode.system == ThemeMode.light,
-          stream: isLightMode.stream,
+          initialData: ThemeMode.system,
+          stream: themeMode.stream,
           builder: (context, snapshot) {
             return MaterialApp(
               title: 'Symple',
               debugShowCheckedModeBanner: false,
-              theme: snapshot.data!
-                  ? ThemeData.light(
-                      useMaterial3: true,
-                    )
-                  : ThemeData.dark(
-                      useMaterial3: true,
-                    ),
+              theme: ThemeData.light(
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData.dark(
+                useMaterial3: true,
+              ),
+              themeMode: snapshot.data,
               home: const ConnectScreen(),
             );
           }),
