@@ -27,8 +27,8 @@ class SocketProvider with ChangeNotifier {
   Future<bool> _createConnection() async {
     try {
       SecurityContext ctx = SecurityContext.defaultContext;
-      final cert = await rootBundle.load('assets/certificate.pem');
-      ctx.useCertificateChainBytes(cert.buffer.asUint8List());
+      final pkey = await rootBundle.load('assets/key.pem');
+      ctx.usePrivateKeyBytes(pkey.buffer.asUint8List());
 
       //TODO: Make flutter/dart accept self signed certificates and make sure that own certificate chain is generated dynamically.
 
@@ -38,6 +38,7 @@ class SocketProvider with ChangeNotifier {
         context: SecurityContext
             .defaultContext, // maybe not needed but addded just in case
         timeout: const Duration(seconds: 10),
+        onBadCertificate: (certificate) => true,
       );
     } catch (e) {
       debugPrint(e.toString());
