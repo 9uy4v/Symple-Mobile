@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
@@ -42,11 +41,14 @@ class MyApp extends StatelessWidget {
             return MaterialApp(
               title: 'Symple',
               debugShowCheckedModeBanner: false,
-              theme: ThemeData.light(
+              theme: ThemeData(
                 useMaterial3: true,
+                colorScheme: const ColorScheme.light(),
               ),
-              darkTheme: ThemeData.dark(
+              darkTheme: ThemeData(
                 useMaterial3: true,
+                colorScheme: const ColorScheme.dark(
+                    surface: Color.fromARGB(255, 18, 18, 18)),
               ),
               themeMode: snapshot.data,
               home: const ConnectScreen(),

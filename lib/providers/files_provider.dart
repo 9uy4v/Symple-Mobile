@@ -25,7 +25,8 @@ class FilesProvider with ChangeNotifier {
   }
 
   void createPrecentageList() {
-    _uploadedPrecentage = List<double>.generate(_selectedFiles.length, (i) => 0);
+    _uploadedPrecentage =
+        List<double>.generate(_selectedFiles.length, (i) => 0);
   }
 
   void updatePrecentage(File file, double precentage) {

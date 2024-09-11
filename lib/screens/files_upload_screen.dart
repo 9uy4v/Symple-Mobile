@@ -6,6 +6,7 @@ import 'package:symple_mobile/providers/files_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
 import 'package:symple_mobile/widgets/file_loading_circle.dart';
+import 'package:symple_mobile/providers/settings_provider.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -24,6 +25,13 @@ class _UploadScreenState extends State<UploadScreen> {
       appBar: AppBar(
         elevation: 0,
         forceMaterialTransparency: true,
+        leading: IconButton(
+          onPressed: () {
+            // TO DO : change ThemeData - Light <-> Dark
+            Provider.of<SettingsProvider>(context, listen: false).switchTheme();
+          },
+          icon: const Icon(Icons.settings),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -91,17 +99,16 @@ class _UploadScreenState extends State<UploadScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
                             boxShadow: const [
                               BoxShadow(
-                                color: Color.fromARGB(56, 235, 228, 234),
+                                color: Color.fromARGB(0, 235, 228, 234),
                                 blurRadius: 3,
                                 spreadRadius: 2,
                               )
                             ],
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: const Color.fromARGB(255, 246, 238, 244),
+                              color: Theme.of(context).dividerColor,
                               width: 2,
                             )),
                         child: Row(
