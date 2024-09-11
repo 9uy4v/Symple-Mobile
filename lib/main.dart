@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/providers/files_provider.dart';
@@ -10,6 +8,7 @@ import 'package:symple_mobile/screens/connection_screen.dart';
 // TO DO : Add styling (dark mode?)
 // TO DO : Add button for connection/file transfer history?
 // TO DO : Flesh out the file transfer screen (Looks too empty). Add outline around box where transfered files show up?
+// TODO : When selecting files from the cloud (drive/photos), the app returns to the add file screen before these items are downloaded. Must add a loading screen for this time intervall.
 
 //TO DO : ...more neat features :)
 

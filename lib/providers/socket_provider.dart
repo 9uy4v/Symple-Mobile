@@ -26,17 +26,10 @@ class SocketProvider with ChangeNotifier {
   // returns true if connection successful and false if error
   Future<bool> _createConnection() async {
     try {
-      SecurityContext ctx = SecurityContext.defaultContext;
-      final pkey = await rootBundle.load('assets/key.pem');
-      ctx.usePrivateKeyBytes(pkey.buffer.asUint8List());
-
-      //TODO: Make flutter/dart accept self signed certificates and make sure that own certificate chain is generated dynamically.
-
       _socket = await SecureSocket.connect(
         _serverIp,
         _serverPort,
-        context: SecurityContext
-            .defaultContext, // maybe not needed but addded just in case
+        context: SecurityContext.defaultContext,
         timeout: const Duration(seconds: 10),
         onBadCertificate: (certificate) => true,
       );
