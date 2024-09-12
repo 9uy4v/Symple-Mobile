@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:provider/provider.dart';
 import 'package:symple_mobile/main.dart';
@@ -43,6 +43,7 @@ class SocketProvider with ChangeNotifier {
 
   Future<bool> handleCode(String code) async {
     // TO DO : add code verification here
+    code = utf8.decode(base64Decode(code));
     _serverIp = code.split(':')[0];
     _serverPort = int.parse(code.split(':')[1]);
 
