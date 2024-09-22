@@ -97,7 +97,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             .removeFileByIndex(index);
                       },
                       child: Material(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(7.5),
                         elevation: 2,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
