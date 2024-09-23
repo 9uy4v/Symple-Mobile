@@ -6,6 +6,9 @@ import 'package:symple_mobile/providers/files_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
 import 'package:symple_mobile/widgets/file_loading_circle.dart';
+import 'package:symple_mobile/providers/settings_provider.dart';
+
+// TO DO : show file uploaded successfully alert (or failed)
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -24,6 +27,13 @@ class _UploadScreenState extends State<UploadScreen> {
       appBar: AppBar(
         elevation: 0,
         forceMaterialTransparency: true,
+        leading: IconButton(
+          onPressed: () {
+            // TO DO : change ThemeData - Light <-> Dark
+            Provider.of<SettingsProvider>(context, listen: false).switchTheme();
+          },
+          icon: const Icon(Icons.settings),
+        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -88,88 +98,79 @@ class _UploadScreenState extends State<UploadScreen> {
                         Provider.of<FilesProvider>(context, listen: false)
                             .removeFileByIndex(index);
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color.fromARGB(56, 235, 228, 234),
-                                blurRadius: 3,
-                                spreadRadius: 2,
-                              )
-                            ],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: const Color.fromARGB(255, 246, 238, 244),
-                              width: 2,
-                            )),
-                        child: Row(
-                          children: [
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: SvgPicture.asset(
-                                Provider.of<FilesProvider>(context,
-                                        listen: false)
-                                    .getFileIconPath(
-                                  fileName.split('.').last,
-                                ),
-                                height: 25,
-                                fit: BoxFit.fitHeight,
+                      child: Material(
+                        borderRadius: BorderRadius.circular(7.5),
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const SizedBox(
+                                width: 5,
                               ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Flexible(
-                              flex: 6,
-                              child: Row(
-                                children: [
-                                  Flexible(
-                                    flex: 3,
-                                    child: Text(
-                                      fileName,
-                                      overflow: TextOverflow.fade,
-                                      softWrap: false,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      Provider.of<FilesProvider>(context,
-                                              listen: false)
-                                          .getFileSizeString(currentFile),
-                                      softWrap: false,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Color.fromARGB(255, 96, 96, 96),
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const Spacer(),
-                            if (isSending)
                               Flexible(
                                 flex: 1,
-                                child: CircularUploadIndicator(
-                                    progress: fileProgress),
+                                child: SvgPicture.asset(
+                                  Provider.of<FilesProvider>(context,
+                                          listen: false)
+                                      .getFileIconPath(
+                                    fileName.split('.').last,
+                                  ),
+                                  height: 25,
+                                  fit: BoxFit.fitHeight,
+                                ),
                               ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                          ],
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Flexible(
+                                flex: 6,
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      flex: 3,
+                                      child: Text(
+                                        fileName,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        Provider.of<FilesProvider>(context,
+                                                listen: false)
+                                            .getFileSizeString(currentFile),
+                                        softWrap: false,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color:
+                                              Color.fromARGB(255, 96, 96, 96),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+                              if (isSending)
+                                Flexible(
+                                  flex: 1,
+                                  child: CircularUploadIndicator(
+                                      progress: fileProgress),
+                                ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
