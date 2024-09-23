@@ -66,117 +66,143 @@ class _UploadScreenState extends State<UploadScreen> {
             ConstrainedBox(
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.sizeOf(context).height / 2),
-              child: ListView.builder(
-                itemCount: Provider.of<FilesProvider>(context, listen: true)
-                    .files
-                    .length,
-                itemBuilder: (context, index) {
-                  final currentFile =
-                      Provider.of<FilesProvider>(context, listen: false)
-                          .files[index];
-                  final fileName = currentFile.path.split('/').last;
-                  final fileProgress =
-                      Provider.of<FilesProvider>(context, listen: true)
-                          .progressList[index];
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-                    child: Dismissible(
-                      key: Key(fileName),
-                      direction: isSending
-                          ? DismissDirection.none
-                          : DismissDirection.horizontal,
-                      background: Container(
-                        padding: const EdgeInsets.all(8),
-                        color: const Color.fromARGB(255, 225, 100, 100),
-                        child: const Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                      ),
-                      onDismissed: (direction) {
+              child: ShaderMask(
+                shaderCallback: (Rect rect) {
+                  return const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.purple,
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.purple
+                    ],
+                    stops: [
+                      0.0,
+                      0.05,
+                      0.925,
+                      1
+                    ], // 5% purple, 87.5% transparent, 7.5% purple
+                  ).createShader(rect);
+                },
+                blendMode: BlendMode.dstOut,
+                child: ListView.builder(
+                  itemCount: Provider.of<FilesProvider>(context, listen: true)
+                      .files
+                      .length,
+                  itemBuilder: (context, index) {
+                    final currentFile =
                         Provider.of<FilesProvider>(context, listen: false)
-                            .removeFileByIndex(index);
-                      },
-                      child: Material(
-                        borderRadius: BorderRadius.circular(7.5),
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: SvgPicture.asset(
-                                  Provider.of<FilesProvider>(context,
-                                          listen: false)
-                                      .getFileIconPath(
-                                    fileName.split('.').last,
-                                  ),
-                                  height: 25,
-                                  fit: BoxFit.fitHeight,
+                            .files[index];
+                    final fileName = currentFile.path.split('/').last;
+                    final fileProgress =
+                        Provider.of<FilesProvider>(context, listen: true)
+                            .progressList[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2.5, horizontal: 4),
+                      child: Dismissible(
+                        key: Key(fileName),
+                        direction: isSending
+                            ? DismissDirection.none
+                            : DismissDirection.horizontal,
+                        background: Container(
+                          padding: const EdgeInsets.all(8),
+                          color: const Color.fromARGB(255, 225, 100, 100),
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onDismissed: (direction) {
+                          Provider.of<FilesProvider>(context, listen: false)
+                              .removeFileByIndex(index);
+                        },
+                        child: Material(
+                          borderRadius: BorderRadius.circular(7.5),
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 5,
                                 ),
-                              ),
-                              const SizedBox(
-                                width: 15,
-                              ),
-                              Flexible(
-                                flex: 6,
-                                child: Row(
-                                  children: [
-                                    Flexible(
-                                      flex: 3,
-                                      child: Text(
-                                        fileName,
-                                        overflow: TextOverflow.fade,
-                                        softWrap: false,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        Provider.of<FilesProvider>(context,
-                                                listen: false)
-                                            .getFileSizeString(currentFile),
-                                        softWrap: false,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color:
-                                              Color.fromARGB(255, 96, 96, 96),
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Spacer(),
-                              if (isSending)
                                 Flexible(
                                   flex: 1,
-                                  child: CircularUploadIndicator(
-                                      progress: fileProgress),
+                                  child: SvgPicture.asset(
+                                    Provider.of<FilesProvider>(context,
+                                            listen: false)
+                                        .getFileIconPath(
+                                      fileName.split('.').last,
+                                    ),
+                                    height: 25,
+                                    fit: BoxFit.fitHeight,
+                                  ),
                                 ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                            ],
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Flexible(
+                                  flex: 6,
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 3,
+                                        child: Text(
+                                          fileName,
+                                          overflow: TextOverflow.fade,
+                                          softWrap: false,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          Provider.of<FilesProvider>(context,
+                                                  listen: false)
+                                              .getFileSizeString(currentFile),
+                                          softWrap: false,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                Color.fromARGB(255, 96, 96, 96),
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Spacer(),
+                                Visibility(
+                                  visible: isSending,
+                                  child: Flexible(
+                                    flex: 1,
+                                    child: CircularUploadIndicator(
+                                        progress: fileProgress),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
             IconButton.filled(
               onPressed: isSending
