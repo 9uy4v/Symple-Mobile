@@ -50,17 +50,16 @@ class SocketProvider with ChangeNotifier {
           final message = String.fromCharCodes(data);
           debugPrint('Recived : $message');
 
-          // got intentions command, establish file info and updating protocol
+          // got intentions command, establish file info
           if (message == 'AckCom') {
             _socket.write('$fileName:$fileSize');
           }
-          // got updating protocol, send file
+          // got file info, send file
           else if (message == 'AckFle') {
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
             // TO DO : add timeout and alert user if file is not sent
-            // TO DO : change the function to send the file in little packets so user can cancel mid upload or quit mid upload.
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {

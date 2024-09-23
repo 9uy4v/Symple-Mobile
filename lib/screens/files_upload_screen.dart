@@ -8,6 +8,8 @@ import 'package:symple_mobile/screens/connection_screen.dart';
 import 'package:symple_mobile/widgets/file_loading_circle.dart';
 import 'package:symple_mobile/providers/settings_provider.dart';
 
+// TO DO : show file uploaded successfully alert (or failed)
+
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
 

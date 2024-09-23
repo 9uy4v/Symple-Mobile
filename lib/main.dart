@@ -10,7 +10,7 @@ import 'package:symple_mobile/screens/connection_screen.dart';
 // TO DO : border and shadow of uploaded files in dark mode, circular progress bar in dark mode , button colors
 // TO DO : Add button for connection/file transfer history?
 
-// kind of the same group :
+// UI :
 // TO DO : Add styling (dark mode?)
 // TO DO : design together a theme for the app- both pc and mobile.
 // TO DO : Flesh out the file transfer screen (Looks too empty). Add outline around box where transfered files show up?

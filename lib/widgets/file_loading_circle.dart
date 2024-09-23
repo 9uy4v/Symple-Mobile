@@ -16,7 +16,7 @@ class CircularUploadIndicator extends StatelessWidget {
     } else if (progress == -1) {
       // ERROR uploading
       return const Icon(
-        Icons.cancel,
+        Icons.error_outline,
         color: Color.fromARGB(255, 175, 76, 76),
         size: 30,
       );
@@ -24,7 +24,7 @@ class CircularUploadIndicator extends StatelessWidget {
       return ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 30, maxWidth: 30),
         child: CircularProgressIndicator(
-          backgroundColor: Colors.grey.shade400,
+          backgroundColor: Theme.of(context).disabledColor,
           value: progress == 0 ? null : progress,
           strokeCap: StrokeCap.round,
         ),
