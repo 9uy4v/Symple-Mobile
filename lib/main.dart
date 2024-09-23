@@ -7,14 +7,12 @@ import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
 
 // TO DO : Add timeout to file uploading
-// TO DO : border and shadow of uploaded files in dark mode, circular progress bar in dark mode , button colors
 // TO DO : Add button for connection/file transfer history?
+// TODO : When selecting files from the cloud (drive/photos), the app returns to the add file screen before these items are downloaded. Must add a loading screen for this time intervall.
 
 // UI :
-// TO DO : Add styling (dark mode?)
 // TO DO : design together a theme for the app- both pc and mobile.
 // TO DO : Flesh out the file transfer screen (Looks too empty). Add outline around box where transfered files show up?
-// TODO : When selecting files from the cloud (drive/photos), the app returns to the add file screen before these items are downloaded. Must add a loading screen for this time intervall.
 
 //TO DO : ...more neat features :)
 
