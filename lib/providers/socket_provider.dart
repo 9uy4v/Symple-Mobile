@@ -16,7 +16,7 @@ class SocketProvider with ChangeNotifier {
   bool _isSending = false;
 
   late Completer sendingFile;
-  late Completer reqTimeout;
+  late Completer transTimeout;
   late File file;
   late String fileName;
   late int fileSize;
@@ -57,15 +57,15 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info
           if (message == 'AckCom') {
-            reqTimeout.complete();
+            transTimeout.complete();
             _socket.write('$fileName:$fileSize');
+            transTimeout = Completer();
           }
           // got file info, send file
           else if (message == 'AckFle') {
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
-            // TODO : add timeout and alert user if file is not sent
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {
@@ -76,8 +76,23 @@ class SocketProvider with ChangeNotifier {
           }
           // updating on file progress
           else if (message.contains('GOT')) {
+            transTimeout.complete();
+            transTimeout = Completer();
+
+            // updating uploaded precentage according to message from pc
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, double.parse(message.split(' ')[1]));
+
+            // checking for timeout during file transfer
+            transTimeout.future.timeout(
+              const Duration(seconds: 5),
+              onTimeout: () {
+                Provider.of<FilesProvider>(publicContext, listen: false)
+                    .updatePrecentage(file, -1);
+                transTimeout.complete();
+                sendingFile.complete();
+              },
+            );
           }
           // finished getting file
           if (message.contains('Fin')) {
@@ -95,7 +110,6 @@ class SocketProvider with ChangeNotifier {
   }
 
   Future<void> sendFiles(List<File> files, BuildContext context) async {
-    // TODO: check socket is not null
     _isSending = true;
     notifyListeners();
 
@@ -105,10 +119,9 @@ class SocketProvider with ChangeNotifier {
         Provider.of<FilesProvider>(context, listen: false)
             .updatePrecentage(file, -1); // shows error on transfer
         continue;
-        // TODO : show alert about file not found and therefore not sent
       }
       sendingFile = Completer();
-      reqTimeout = Completer();
+      transTimeout = Completer();
 
       file = curFile;
       // setting all variables needed for transfer
@@ -117,7 +130,7 @@ class SocketProvider with ChangeNotifier {
 
       _socket.write('S');
 
-      await reqTimeout.future.timeout(
+      await transTimeout.future.timeout(
         const Duration(
             seconds: 5), // TODO : set a duration- this is for testing only
         onTimeout: () {
