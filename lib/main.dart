@@ -6,15 +6,15 @@ import 'package:symple_mobile/providers/settings_provider.dart';
 import 'package:symple_mobile/providers/socket_provider.dart';
 import 'package:symple_mobile/screens/connection_screen.dart';
 
-// TO DO : Add timeout to file uploading
-// TO DO : Add button for connection/file transfer history?
+// TODO : Add timeout to file uploading
+// TODO : Add button for connection/file transfer history?
 // TODO : When selecting files from the cloud (drive/photos), the app returns to the add file screen before these items are downloaded. Must add a loading screen for this time intervall.
 
 // UI :
-// TO DO : design together a theme for the app- both pc and mobile.
-// TO DO : Flesh out the file transfer screen (Looks too empty). Add outline around box where transfered files show up?
+// TODO : design together a theme for the app- both pc and mobile.
+// TODO : Flesh out the file transfer screen (Looks too empty). Add outline around box where transfered files show up?
 
-//TO DO : ...more neat features :)
+//TODO : ...more neat features :)
 
 StreamController<ThemeMode> themeMode = StreamController();
 

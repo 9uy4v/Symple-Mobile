@@ -26,7 +26,7 @@ class SettingsProvider with ChangeNotifier {
   }
 
   void switchTheme() {
-    // TO DO : in settings show 3 options- dark,light and system default. in case of system default delete prefrence.
+    // TODO : in settings show 3 options- dark,light and system default. in case of system default delete prefrence.
     var brightness =
         SchedulerBinding.instance.platformDispatcher.platformBrightness;
 

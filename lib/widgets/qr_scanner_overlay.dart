@@ -101,7 +101,7 @@ class BorderPainter extends CustomPainter {
       rrect,
       Paint()
         ..color = const Color.fromARGB(255, 215, 106,
-            240) // TO DO : choose from Theme and make red when error
+            240) // TODO : choose from Theme and make red when error
         ..style = PaintingStyle.stroke
         ..strokeWidth = width,
     );

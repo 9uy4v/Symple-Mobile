@@ -16,6 +16,7 @@ class SocketProvider with ChangeNotifier {
   bool _isSending = false;
 
   late Completer sendingFile;
+  late Completer reqTimeout;
   late File file;
   late String fileName;
   late int fileSize;
@@ -42,7 +43,7 @@ class SocketProvider with ChangeNotifier {
   }
 
   Future<bool> handleCode(String code) async {
-    // TO DO : add code verification here
+    // TODO : add code verification here
     code = utf8.decode(base64Decode(code));
     _serverIp = code.split(':')[0];
     _serverPort = int.parse(code.split(':')[1]);
@@ -56,6 +57,7 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info
           if (message == 'AckCom') {
+            reqTimeout.complete();
             _socket.write('$fileName:$fileSize');
           }
           // got file info, send file
@@ -63,7 +65,7 @@ class SocketProvider with ChangeNotifier {
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 0.001);
             _socket.add(file.readAsBytesSync());
-            // TO DO : add timeout and alert user if file is not sent
+            // TODO : add timeout and alert user if file is not sent
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {
@@ -92,17 +94,21 @@ class SocketProvider with ChangeNotifier {
     }
   }
 
-  void sendFiles(List<File> files, BuildContext context) async {
+  Future<void> sendFiles(List<File> files, BuildContext context) async {
+    // TODO: check socket is not null
     _isSending = true;
     notifyListeners();
 
     for (File curFile in files) {
       // making sure file exists (not deleted after selected)
       if (!curFile.existsSync()) {
+        Provider.of<FilesProvider>(context, listen: false)
+            .updatePrecentage(file, -1); // shows error on transfer
         continue;
-        // TO DO : show alert about file not found and therefore not sent
+        // TODO : show alert about file not found and therefore not sent
       }
       sendingFile = Completer();
+      reqTimeout = Completer();
 
       file = curFile;
       // setting all variables needed for transfer
@@ -111,12 +117,43 @@ class SocketProvider with ChangeNotifier {
 
       _socket.write('S');
 
+      await reqTimeout.future.timeout(
+        const Duration(
+            seconds: 5), // TODO : set a duration- this is for testing only
+        onTimeout: () {
+          // move to next file
+          Provider.of<FilesProvider>(context, listen: false)
+              .updatePrecentage(file, -1); // error on file
+          sendingFile.complete(); // the app wil continue to the next file
+        },
+      );
+
       await sendingFile.future;
     }
 
+    // TODO : maybe move the alert to another file for more readable code
+    // TODO : complete alert dialog
+    if (Provider.of<FilesProvider>(context, listen: false)
+        .progressList
+        .contains(-1)) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Some files were not transfered"),
+          content: const Text(
+              "The files may have been deleted by the time you transfered them or the connection with your computer ended"),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("OK")),
+            // TODO : add "try again" button (?)
+            // TODO : add "reconnect to pc" button/ auto check pc connection
+          ],
+        ),
+      );
+    }
+
     _isSending = false;
-    files.clear();
-    notifyListeners();
   }
 
   void disconnect() {

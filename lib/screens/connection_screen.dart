@@ -25,7 +25,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            // TO DO : change ThemeData - Light <-> Dark
+            // TODO : change ThemeData - Light <-> Dark
             Provider.of<SettingsProvider>(context, listen: false).switchTheme();
           },
           icon: const Icon(Icons.settings),
@@ -59,15 +59,15 @@ class _ConnectScreenState extends State<ConnectScreen> {
                           scannedBarcode != '---'
                               ? isScanComplete = true
                               : debugPrint(
-                                  'null code received'); // TO DO : delete when validator added
-                          // TO DO : splash screen while getting ip and establishing connection with pc
-                          // TO DO : validate barcode
+                                  'null code received'); // TODO : delete when validator added
+                          // TODO : splash screen while getting ip and establishing connection with pc
+                          // TODO : validate barcode
                           print('got a code! : $scannedBarcode');
                           Provider.of<SocketProvider>(context, listen: false)
                               .handleCode(scannedBarcode)
                               .then(
                             (value) {
-                              // TO DO : exit splash screen
+                              // TODO : exit splash screen
                               if (value) {
                                 Navigator.pushReplacement(
                                     context,
@@ -78,7 +78,7 @@ class _ConnectScreenState extends State<ConnectScreen> {
                               } else {
                                 isScanComplete = false;
                                 print('can\'t connect to PC');
-                                // TO DO : show error message
+                                // TODO : show error message
                               }
                             },
                           );

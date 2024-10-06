@@ -8,7 +8,7 @@ import 'package:symple_mobile/screens/connection_screen.dart';
 import 'package:symple_mobile/widgets/file_loading_circle.dart';
 import 'package:symple_mobile/providers/settings_provider.dart';
 
-// TO DO : show file uploaded successfully alert (or failed)
+// TODO : show file uploaded successfully alert (or failed)
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -29,7 +29,6 @@ class _UploadScreenState extends State<UploadScreen> {
         forceMaterialTransparency: true,
         leading: IconButton(
           onPressed: () {
-            // TO DO : change ThemeData - Light <-> Dark
             Provider.of<SettingsProvider>(context, listen: false).switchTheme();
           },
           icon: const Icon(Icons.settings),
@@ -230,9 +229,18 @@ class _UploadScreenState extends State<UploadScreen> {
             if (!isSending) {
               Provider.of<FilesProvider>(context, listen: false)
                   .createPrecentageList();
-              Provider.of<SocketProvider>(context, listen: false).sendFiles(
-                  Provider.of<FilesProvider>(context, listen: false).files,
-                  context);
+              Provider.of<SocketProvider>(context, listen: false)
+                  .sendFiles(
+                      Provider.of<FilesProvider>(context, listen: false).files,
+                      context)
+                  .then(
+                (value) {
+                  setState(() {
+                    Provider.of<FilesProvider>(context, listen: false)
+                        .clearFilesList();
+                  });
+                },
+              );
             }
           },
           child: const Icon(Icons.send),
