@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:symple_mobile/screens/splash_screen.dart';
 
 class FilesProvider with ChangeNotifier {
   final List<File> _selectedFiles = [];
@@ -25,8 +26,7 @@ class FilesProvider with ChangeNotifier {
   }
 
   void createPrecentageList() {
-    _uploadedPrecentage =
-        List<double>.generate(_selectedFiles.length, (i) => 0);
+    _uploadedPrecentage = List<double>.generate(_selectedFiles.length, (i) => 0);
   }
 
   void updatePrecentage(File file, double precentage) {
@@ -34,10 +34,17 @@ class FilesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void selectFiles() async {
+  void selectFiles(context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.any,
+      onFileLoading: (p0) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SplashScreen(),
+            ));
+      },
     );
 
     if (result != null) {
