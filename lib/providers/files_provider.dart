@@ -8,6 +8,7 @@ import 'package:symple_mobile/screens/splash_screen.dart';
 class FilesProvider with ChangeNotifier {
   final List<File> _selectedFiles = [];
   late List<double> _uploadedPrecentage;
+  late FilePickerStatus cachingStatus;
 
   List<File> get files => _selectedFiles;
   List<double> get progressList => _uploadedPrecentage;
@@ -26,7 +27,8 @@ class FilesProvider with ChangeNotifier {
   }
 
   void createPrecentageList() {
-    _uploadedPrecentage = List<double>.generate(_selectedFiles.length, (i) => 0);
+    _uploadedPrecentage =
+        List<double>.generate(_selectedFiles.length, (i) => 0);
   }
 
   void updatePrecentage(File file, double precentage) {
@@ -38,12 +40,11 @@ class FilesProvider with ChangeNotifier {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.any,
-      onFileLoading: (p0) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SplashScreen(),
-            ));
+      onFileLoading: (p0) async {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const SplashScreen()));
+        cachingStatus = p0;
+        notifyListeners();
       },
     );
 

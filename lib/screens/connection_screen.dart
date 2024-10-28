@@ -25,7 +25,6 @@ class _ConnectScreenState extends State<ConnectScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            // TODO : change ThemeData - Light <-> Dark
             Provider.of<SettingsProvider>(context, listen: false).switchTheme();
           },
           icon: const Icon(Icons.settings),

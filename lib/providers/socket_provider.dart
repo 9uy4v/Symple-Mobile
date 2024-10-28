@@ -57,39 +57,55 @@ class SocketProvider with ChangeNotifier {
 
           // got intentions command, establish file info
           if (message == 'AckCom') {
-            transTimeout.complete();
+            transTimeout.complete(); // finishing last timeout timer
+
             _socket.write('$fileName:$fileSize');
-            transTimeout = Completer();
+
+            transTimeout = Completer(); // starting another timeout timer
+
+            // on timeout of defined timer
+            transTimeout.future.timeout(
+              const Duration(seconds: 5),
+              onTimeout: () {
+                // updating progress indecator to error
+                Provider.of<FilesProvider>(publicContext, listen: false)
+                    .updatePrecentage(file, -1);
+                sendingFile.complete();
+              },
+            );
           }
           // got file info, send file
           else if (message == 'AckFle') {
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 0.001);
-            _socket.add(file.readAsBytesSync());
+
+            _socket.add(file.readAsBytesSync()); // sending file
           }
           // unknown or Inv- error
           else if (message.contains('Inv')) {
             print('Error : $message');
-            // updating to error code
+
+            // updating progress indecator to error
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, -1);
+            sendingFile.complete(); // stopping current file transfer
           }
           // updating on file progress
           else if (message.contains('GOT')) {
-            transTimeout.complete();
-            transTimeout = Completer();
+            transTimeout.complete(); // canceling the last timeout timer
+            transTimeout = Completer(); // creating a new timeout timer
 
             // updating uploaded precentage according to message from pc
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, double.parse(message.split(' ')[1]));
 
-            // checking for timeout during file transfer
+            // on timeout of defined timer
             transTimeout.future.timeout(
               const Duration(seconds: 5),
               onTimeout: () {
+                // updating progress indecator to error
                 Provider.of<FilesProvider>(publicContext, listen: false)
                     .updatePrecentage(file, -1);
-                transTimeout.complete();
                 sendingFile.complete();
               },
             );
@@ -97,16 +113,18 @@ class SocketProvider with ChangeNotifier {
           // finished getting file
           if (message.contains('Fin')) {
             print('File passed successful');
-            sendingFile.complete();
+
+            transTimeout.complete(); // finishing the timeout timer
+            sendingFile.complete(); // finishing this file's transfer
+
             Provider.of<FilesProvider>(publicContext, listen: false)
                 .updatePrecentage(file, 1);
           }
         },
       );
-      return true;
-    } else {
-      return false;
+      return true; // created connection successfuly
     }
+    return false; // failed to create connection
   }
 
   Future<void> sendFiles(List<File> files, BuildContext context) async {
@@ -123,16 +141,16 @@ class SocketProvider with ChangeNotifier {
       sendingFile = Completer();
       transTimeout = Completer();
 
-      file = curFile;
       // setting all variables needed for transfer
+      file = curFile;
       fileName = curFile.path.split('/').last;
       fileSize = curFile.lengthSync();
 
       _socket.write('S');
 
+      // on timeout of defined timer
       await transTimeout.future.timeout(
-        const Duration(
-            seconds: 5), // TODO : set a duration- this is for testing only
+        const Duration(seconds: 5),
         onTimeout: () {
           // move to next file
           Provider.of<FilesProvider>(context, listen: false)
